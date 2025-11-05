@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Untitled</title>
+    
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Petit Bac avec Driss 🤖</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    .game-container {
+      background: white;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      width: 400px;
+      text-align: center;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .letter {
+      font-size: 48px;
+      font-weight: bold;
+      margin: 10px 0 20px;
+    }
+
+    .category {
+      margin-bottom: 10px;
+    }
+
+    input {
+      width: 90%;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      outline: none;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 5px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    select {
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      margin-bottom: 10px;
+      outline: none;
+    }
+
+    .score {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+
+    .driss-answer {
+      font-size: 14px;
+      color: #555;
+      margin-top: 5px;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎓 Petit Bac avec Driss 🤖</h1>
+
+  <div class="game-container">
+    <label for="mode">Choisis ton mode de jeu :</label><br>
+    <select id="mode" onchange="changerMode()">
+      <option value="solo">🎮 Mode Solo</option>
+      <option value="driss">🤖 Contre Driss</option>
+    </select>
+
+    <div class="letter" id="letter">?</div>
+    <div id="categories"></div>
+
+    <button onclick="verifier()">Vérifier</button>
+    <button onclick="nouvelleLettre()">Nouvelle Lettre</button>
+
+    <div class="score" id="score"></div>
+  </div>
+
+  <script>
+    const categories = ["Prénom", "Animal", "Pays", "Objet", "Fruit/Légume"];
+    const categoriesDiv = document.getElementById("categories");
+    const letterDiv = document.getElementById("letter");
+    const scoreDiv = document.getElementById("score");
+    const modeSelect = document.getElementById("mode");
+
+    // Base de données simple pour Driss
+    const drissDictionnaire = {
+      "Prénom": ["Ahmed", "Luc", "Thomas", "Fatima", "Nina", "Sophie", "Rayan", "Zara"],
+      "Animal": ["Lion", "Tigre", "Lapin", "Chien", "Zèbre", "Ours", "Chat", "Aigle"],
+      "Pays": ["France", "Maroc", "Canada", "Italie", "Brésil", "Norvège", "Chine", "Zambie"],
+      "Objet": ["Lampe", "Chaise", "Stylo", "Livre", "Téléphone", "Vase", "Crayon", "Bouteille"],
+      "Fruit/Légume": ["Pomme", "Banane", "Carotte", "Kiwi", "Mangue", "Raisin", "Orange", "Tomate"]
+    };
+
+    // Création dynamique des champs
+    function creerChamps() {
+      categoriesDiv.innerHTML = "";
+      categories.forEach(cat => {
+        const div = document.createElement("div");
+        div.className = "category";
+        div.innerHTML = `
+          <label>${cat} :</label><br>
+          <input type="text" id="${cat}" placeholder="Ta réponse...">
+          <div class="driss-answer" id="driss-${cat}" style="display:none"></div>
+        `;
+        categoriesDiv.appendChild(div);
+      });
+    }
+
+    // Nouvelle lettre aléatoire
+    function nouvelleLettre() {
+      const lettres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      const lettre = lettres[Math.floor(Math.random() * lettres.length)];
+      letterDiv.textContent = lettre;
+      scoreDiv.textContent = "";
+      document.querySelectorAll("input").forEach(input => input.value = "");
+      document.querySelectorAll(".driss-answer").forEach(div => div.style.display = "none");
+    }
+
+    function changerMode() {
+      scoreDiv.textContent = "";
+      nouvelleLettre();
+    }
+
+    // Driss génère ses réponses avec possibilité d’erreur
+    function drissRepond(lettre) {
+      const reponses = {};
+      categories.forEach(cat => {
+        const mots = drissDictionnaire[cat];
+
+        // 30 % de chance que Driss se trompe
+        const faitErreur = Math.random() < 0.3;
+        if (faitErreur) {
+          // Il prend un mot aléatoire (souvent faux)
+          reponses[cat] = mots[Math.floor(Math.random() * mots.length)];
+        } else {
+          // Il essaie de trouver un mot correct
+          const choix = mots.find(m => m[0].toUpperCase() === lettre);
+          reponses[cat] = choix ? choix : mots[Math.floor(Math.random() * mots.length)];
+        }
+      });
+      return reponses;
+    }
+
+    // Vérification et score
+    function verifier() {
+      const lettre = letterDiv.textContent;
+      if (lettre === "?") {
+        alert("Clique sur 'Nouvelle Lettre' pour commencer !");
+        return;
+      }
+
+      let scoreJoueur = 0;
+      let scoreDriss = 0;
+      const mode = modeSelect.value;
+      let drissAnswers = {};
+
+      if (mode === "driss") {
+        drissAnswers = drissRepond(lettre);
+      }
+
+      categories.forEach(cat => {
+        const reponse = document.getElementById(cat).value.trim();
+        if (reponse && reponse[0].toUpperCase() === lettre) scoreJoueur += 10;
+
+        if (mode === "driss") {
+          const divDriss = document.getElementById("driss-" + cat);
+          divDriss.style.display = "block";
+          divDriss.textContent = `Driss : ${drissAnswers[cat]}`;
+          if (drissAnswers[cat][0].toUpperCase() === lettre) scoreDriss += 10;
+        }
+      });
+
+      if (mode === "solo") {
+        scoreDiv.textContent = `Ton score : ${scoreJoueur} points`;
+      } else {
+        scoreDiv.textContent = `Toi : ${scoreJoueur} pts | Driss 🤖 : ${scoreDriss} pts`;
+        if (scoreJoueur > scoreDriss) scoreDiv.textContent += " 🎉 Tu gagnes !";
+        else if (scoreJoueur < scoreDriss) scoreDiv.textContent += " 😏 Driss gagne...";
+        else scoreDiv.textContent += " 🤝 Égalité !";
+      }
+    }
+
+    // Initialisation
+    creerChamps();
+    nouvelleLettre();
+  </script>
+</body>
+</html>
+    <script  src="./script.js"></script>
+
+  </body>
+  
+</html>
