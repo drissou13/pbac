@@ -93,6 +93,63 @@
       margin-bottom: 10px;
       font-weight: bold;
     }
+
+    /* 🎭 Modal des règles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.6);
+      animation: fadeIn 0.3s;
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: 5% auto;
+      padding: 20px;
+      border-radius: 20px;
+      width: 80%;
+      max-width: 700px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      animation: popIn 0.4s;
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover {
+      color: #333;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; } to { opacity: 1; }
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .regles {
+      text-align: left;
+      line-height: 1.6;
+      color: #222;
+    }
+
+    .regles h2 {
+      text-align: center;
+      color: #2c3e50;
+    }
   </style>
 </head>
 <body>
@@ -111,8 +168,62 @@
 
     <button onclick="verifier()">Vérifier</button>
     <button onclick="nouvelleLettre()">Nouvelle Lettre</button>
+    <button onclick="ouvrirRegles()">📜 Règles (version Saïdou)</button>
 
     <div class="score" id="score"></div>
+  </div>
+
+  <!-- 🎭 Fenêtre modale des règles -->
+  <div id="modalRegles" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="fermerRegles()">&times;</span>
+      <div class="regles">
+        <h2>📜 Les Règles du Petit Bac avec Driss (version Saïdou Abatcha)</h2>
+        <p>Mesdames, Messieurs, chers enfants du village numérique, approchez, approchez ! 😄  
+        Aujourd’hui, je vous explique le grand jeu du <b>Petit Bac</b> — là où les lettres deviennent folles et les cerveaux chauffent ! 🔥</p>
+
+        <h3>🧠 Le but du jeu</h3>
+        <p>Simple : trouve des mots qui commencent par la <b>lettre imposée</b> !  
+        Si la lettre c’est <b>B</b>, et tu viens avec “orange”... mon ami, tu perds gratuitement 😅</p>
+
+        <h3>🎮 Les modes</h3>
+        <ul>
+          <li><b>Mode Solo :</b> Tu joues seul, toi et ton cerveau.</li>
+          <li><b>Mode Driss :</b> Tu affrontes Driss,  parfois intello 🤓, parfois maladroit 😅.</li>
+        </ul>
+
+        <h3>🔠 Le déroulement</h3>
+        <ol>
+          <li>Une lettre tombe du ciel 🌩️</li>
+          <li>Tu remplis les 5 catégories : Prénom, Animal, Pays, Objet, Fruit/Légume 🍎</li>
+          <li>Tu cliques sur <b>Vérifier</b> et tu découvres le vainqueur.</li>
+        </ol>
+
+        <h3>⚖️ Les points</h3>
+        <p>10 points par bonne réponse.  
+        Mauvaise lettre ou oubli ? Zéro, nada, wallou 😅  
+        À la fin :
+        <ul>
+          <li>Si tu gagnes → tu es le champion du village 🏆</li>
+          <li>Si Driss gagne → il faut accepter, il est né dans la technologie 🤖</li>
+          <li>Égalité → buvez un jus ensemble 🍹</li>
+        </ul>
+        </p>
+
+        <h3>🤖 Les humeurs de Driss</h3>
+        <p>Chaque manche, Driss tire son humeur :
+        <ul>
+          <li>🤓 <b>Intello</b> – il trouve presque tout !</li>
+          <li>😅 <b>Maladroit</b> – il confond “banane” avec “Belgique” 😆</li>
+        </ul>
+        On ne sait jamais à quoi s’attendre, et c’est ça la magie du jeu !</p>
+
+        <h3>🎯 En résumé</h3>
+        <p>Dans ce jeu, si tu réfléchis trop, tu perds du temps.  
+        Si tu ne réfléchis pas assez, tu perds des points.  
+        Mais si tu ris pendant la partie... alors tu as déjà gagné ! 😄</p>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -123,7 +234,7 @@
     const modeSelect = document.getElementById("mode");
     const drissMoodDiv = document.getElementById("driss-mood");
 
-    // Base de données simple pour Driss
+    // Dictionnaire de Driss
     const drissDictionnaire = {
       "Prénom": ["Ahmed", "Luc", "Thomas", "Fatima", "Nina", "Sophie", "Rayan", "Zara"],
       "Animal": ["Lion", "Tigre", "Lapin", "Chien", "Zèbre", "Ours", "Chat", "Aigle"],
@@ -132,9 +243,8 @@
       "Fruit/Légume": ["Pomme", "Banane", "Carotte", "Kiwi", "Mangue", "Raisin", "Orange", "Tomate"]
     };
 
-    let drissMode = "intello"; // par défaut
+    let drissMode = "intello";
 
-    // 🧠 Driss change de personnalité à chaque manche
     function definirComportementDriss() {
       const tirage = Math.random();
       if (tirage < 0.5) {
@@ -148,7 +258,6 @@
       }
     }
 
-    // Création dynamique des champs
     function creerChamps() {
       categoriesDiv.innerHTML = "";
       categories.forEach(cat => {
@@ -163,7 +272,6 @@
       });
     }
 
-    // Nouvelle lettre aléatoire
     function nouvelleLettre() {
       const lettres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
       const lettre = lettres[Math.floor(Math.random() * lettres.length)];
@@ -171,8 +279,6 @@
       scoreDiv.textContent = "";
       document.querySelectorAll("input").forEach(input => input.value = "");
       document.querySelectorAll(".driss-answer").forEach(div => div.style.display = "none");
-
-      // 🧠 Définir humeur de Driss
       definirComportementDriss();
     }
 
@@ -181,13 +287,10 @@
       nouvelleLettre();
     }
 
-    // Driss génère ses réponses selon son humeur
     function drissRepond(lettre) {
       const reponses = {};
       categories.forEach(cat => {
         const mots = drissDictionnaire[cat];
-
-        // Niveau d’erreur selon l’humeur
         const tauxErreur = (drissMode === "intello") ? 0.1 : 0.5;
         const faitErreur = Math.random() < tauxErreur;
 
@@ -201,7 +304,6 @@
       return reponses;
     }
 
-    // Vérification et score
     function verifier() {
       const lettre = letterDiv.textContent;
       if (lettre === "?") {
@@ -237,6 +339,22 @@
         if (scoreJoueur > scoreDriss) scoreDiv.textContent += " 🎉 Tu gagnes !";
         else if (scoreJoueur < scoreDriss) scoreDiv.textContent += " 😏 Driss gagne...";
         else scoreDiv.textContent += " 🤝 Égalité !";
+      }
+    }
+
+    // Modal règles
+    function ouvrirRegles() {
+      document.getElementById("modalRegles").style.display = "block";
+    }
+
+    function fermerRegles() {
+      document.getElementById("modalRegles").style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById("modalRegles");
+      if (event.target === modal) {
+        modal.style.display = "none";
       }
     }
 
