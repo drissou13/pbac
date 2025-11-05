@@ -1,15 +1,4 @@
 <!DOCTYPE html>
-<html lang="en">
-
-  <head>
-    <meta charset="UTF-8">
-    <title>Untitled</title>
-    
-
-  </head>
-    
-  <body>
-  <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
@@ -98,6 +87,12 @@
       margin-top: 5px;
       font-style: italic;
     }
+
+    .driss-mood {
+      font-size: 16px;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -110,6 +105,7 @@
       <option value="driss">🤖 Contre Driss</option>
     </select>
 
+    <div class="driss-mood" id="driss-mood"></div>
     <div class="letter" id="letter">?</div>
     <div id="categories"></div>
 
@@ -125,6 +121,7 @@
     const letterDiv = document.getElementById("letter");
     const scoreDiv = document.getElementById("score");
     const modeSelect = document.getElementById("mode");
+    const drissMoodDiv = document.getElementById("driss-mood");
 
     // Base de données simple pour Driss
     const drissDictionnaire = {
@@ -134,6 +131,22 @@
       "Objet": ["Lampe", "Chaise", "Stylo", "Livre", "Téléphone", "Vase", "Crayon", "Bouteille"],
       "Fruit/Légume": ["Pomme", "Banane", "Carotte", "Kiwi", "Mangue", "Raisin", "Orange", "Tomate"]
     };
+
+    let drissMode = "intello"; // par défaut
+
+    // 🧠 Driss change de personnalité à chaque manche
+    function definirComportementDriss() {
+      const tirage = Math.random();
+      if (tirage < 0.5) {
+        drissMode = "maladroit";
+        drissMoodDiv.textContent = "😅 Driss a mal dormi... Il risque de se tromper !";
+        drissMoodDiv.style.color = "#c0392b";
+      } else {
+        drissMode = "intello";
+        drissMoodDiv.textContent = "🤓 Driss est concentré et en pleine forme !";
+        drissMoodDiv.style.color = "#27ae60";
+      }
+    }
 
     // Création dynamique des champs
     function creerChamps() {
@@ -158,6 +171,9 @@
       scoreDiv.textContent = "";
       document.querySelectorAll("input").forEach(input => input.value = "");
       document.querySelectorAll(".driss-answer").forEach(div => div.style.display = "none");
+
+      // 🧠 Définir humeur de Driss
+      definirComportementDriss();
     }
 
     function changerMode() {
@@ -165,19 +181,19 @@
       nouvelleLettre();
     }
 
-    // Driss génère ses réponses avec possibilité d’erreur
+    // Driss génère ses réponses selon son humeur
     function drissRepond(lettre) {
       const reponses = {};
       categories.forEach(cat => {
         const mots = drissDictionnaire[cat];
 
-        // 30 % de chance que Driss se trompe
-        const faitErreur = Math.random() < 0.3;
+        // Niveau d’erreur selon l’humeur
+        const tauxErreur = (drissMode === "intello") ? 0.1 : 0.5;
+        const faitErreur = Math.random() < tauxErreur;
+
         if (faitErreur) {
-          // Il prend un mot aléatoire (souvent faux)
           reponses[cat] = mots[Math.floor(Math.random() * mots.length)];
         } else {
-          // Il essaie de trouver un mot correct
           const choix = mots.find(m => m[0].toUpperCase() === lettre);
           reponses[cat] = choix ? choix : mots[Math.floor(Math.random() * mots.length)];
         }
@@ -229,9 +245,4 @@
     nouvelleLettre();
   </script>
 </body>
-</html>
-    <script  src="./script.js"></script>
-
-  </body>
-  
 </html>
