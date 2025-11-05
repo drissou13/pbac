@@ -1,1 +1,0 @@
-const faitErreur = Math.random() < 0.3; // 0.3 = 30% d'erreur
